@@ -16,7 +16,6 @@ export class HttpLoggingInterceptor implements NestInterceptor {
             .handle()
             .pipe(
                 tap((data) => {
-                    Logger.log(`Outgoing Request: ${method} ${url} - Body: ${JSON.stringify(body)} - Response: ${JSON.stringify(data)} - ${Date.now() - now}ms`, context.getClass().name);
                     const log: ILogs = {
                         method,
                         url,
@@ -24,7 +23,7 @@ export class HttpLoggingInterceptor implements NestInterceptor {
                         responseStatus: data.status,
                         responseBody: data.data,
                         duration: Date.now() - now,
-                        description: `Outgoing Request: ${method} ${url} - Body: ${JSON.stringify(body)} - Response: ${JSON.stringify(data)} - ${Date.now() - now}ms ${context.getClass().name}`,
+                        description: `Outgoing Request: ${method} ${url} - ${context.getClass().name}`,
                     };
 
                     this.logsRepository.create(log)

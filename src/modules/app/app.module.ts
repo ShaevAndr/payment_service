@@ -10,15 +10,6 @@ import { HttpLogsModule } from '../httpLogger/logger.module';
 @Module({
   imports: [
     HttpLogsModule,
-    // MongooseModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     uri: configService.get<string>('MONGODB_URI'),
-    //     useNewUrlParser: true,
-    //     useUnifiedTopology: true,
-    //   }),
-    //   inject: [ConfigService],
-    // }),
     LoggerModule.forRoot(AppConfig.getLoggerConfig()),
     PaymentModule],
   controllers: [AppController],

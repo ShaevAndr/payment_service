@@ -3,6 +3,7 @@ export interface AmountDetails {
     currency: string //Код валюты согласно ISO 4217. Регистр не важен. Варианты: rub, eur
 }
 
+
 export interface Card {
     type: string
     bank_card: BankCard

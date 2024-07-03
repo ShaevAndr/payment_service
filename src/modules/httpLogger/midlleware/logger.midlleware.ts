@@ -1,14 +1,12 @@
 import { ILogs } from '@/core/interfaces/logs.interface';
 import { Injectable, NestMiddleware, Logger, Inject } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { Model } from 'mongoose';
 import { LogRepository } from '../logger.repository';
 
 @Injectable()
 export class HttpLoggerMiddleware implements NestMiddleware {
     constructor(
-        @Inject('LOG_MODEL') private readonly logsRepository: Model<ILogs>
-        // private readonly logsRepository: LogRepository
+        private readonly logsRepository:LogRepository,
     ) {
 
     }
