@@ -1,4 +1,9 @@
 import { Module } from '@nestjs/common';
 
-@Module({})
-export class HttpModule {}
+import { HttpService } from './http.service';
+
+@Module({
+    exports: [HttpService],
+    providers: [HttpService],
+})
+export class HttpModule { }

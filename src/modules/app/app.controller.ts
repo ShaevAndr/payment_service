@@ -1,14 +1,16 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
+import { HttpLoggingInterceptor } from '../httpLogger/intercetors/logger.interceptor';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-  @Post()
-  getHello(@Body() data: any): any {
-    console.log(data)
+  // @Post()
+  @UseInterceptors(HttpLoggingInterceptor)
+  @Get()
+  async getHello() {
 
-    return this.appService.getHello()
+    return await this.appService.getHello()
   }
 }

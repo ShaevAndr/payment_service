@@ -6,9 +6,11 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppConfig } from './app.config';
 import { HttpLoggerMiddleware } from '@modules/httpLogger/midlleware/logger.midlleware';
 import { HttpLogsModule } from '../httpLogger/logger.module';
+import { HttpModule } from '../http/http.module';
 
 @Module({
   imports: [
+    HttpModule,
     HttpLogsModule,
     LoggerModule.forRoot(AppConfig.getLoggerConfig()),
     PaymentModule],

@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { HttpService } from '@modules/http/http.service';
 
 @Injectable()
 export class AppService {
-  getHello(): any {
-    return { hello: 'Hello World!' };
+  constructor(
+    private readonly http: HttpService
+  ) { }
+  async getHello() {
+
+
+    return await this.http.get('https://jsonplaceholder.typicode.com/todos/1')
   }
 }

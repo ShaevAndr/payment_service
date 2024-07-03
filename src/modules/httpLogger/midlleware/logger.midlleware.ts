@@ -6,7 +6,7 @@ import { LogRepository } from '../logger.repository';
 @Injectable()
 export class HttpLoggerMiddleware implements NestMiddleware {
     constructor(
-        private readonly logsRepository:LogRepository,
+        private readonly logsRepository: LogRepository,
     ) {
 
     }
