@@ -6,8 +6,7 @@ import { ILogs } from '@/core/interfaces/logs.interface';
 @Injectable()
 export class LogRepository {
     constructor(
-        @Inject('LOG_MODEL')
-        private logModel: Model<ILogs>,
+        @Inject('LOG_MODEL') private logModel: Model<ILogs>,
     ) { }
 
     async create(log: ILogs): Promise<ILogs> {

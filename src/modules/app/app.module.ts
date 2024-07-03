@@ -4,13 +4,12 @@ import { AppService } from './app.service';
 import { PaymentModule } from '@modules/payment/payment.module';
 import { LoggerModule } from 'nestjs-pino';
 import { AppConfig } from './app.config';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import { HttpLoggerMiddleware } from '../logger/midlleware/logger.midlleware';
+import { HttpLoggerMiddleware } from '@modules/httpLogger/midlleware/logger.midlleware';
+import { HttpLogsModule } from '../httpLogger/logger.module';
 
 @Module({
   imports: [
-    LoggerModule,
+    HttpLogsModule,
     // MongooseModule.forRootAsync({
     //   imports: [ConfigModule],
     //   useFactory: async (configService: ConfigService) => ({
