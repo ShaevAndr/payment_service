@@ -1,4 +1,4 @@
-import { AmountDetails, AmountDetails2, Card, FiscalizationDetails, ParticipantDetails, PaymentMethod } from "."
+import { AmountDetails, FiscalizationDetails, ParticipantDetails, PaymentMethod } from "."
 
 export interface PaymentResponseSuccess {
     id: string
@@ -16,7 +16,3 @@ export interface PaymentResponseError {
     status: string
 }
 
-export interface Error {
-    code: string
-    description: string
-}

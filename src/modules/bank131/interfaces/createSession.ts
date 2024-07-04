@@ -1,6 +1,6 @@
-import { AmountDetails, Payment } from "."
+import { AmountDetails, Amounts, Customer, ParticipantDetails, Payment, PaymentDetails, RecurrentTokenInfo, Refund } from "."
 
-export interface CreateSession {
+export interface CreateSessionRequest {
     amount_details: AmountDetails
     metadata: string
 }
@@ -38,7 +38,7 @@ interface AcquiringPayment {
     customer: Customer	                    //Данные пользователя (отправителя платежа)
     recurrent: RecurrentTokenInfo	        //Данные для проведения повторного платежа
     participant_details: ParticipantDetails	//Данные об участниках
-    refunds: array<Refund>	                //Список возвратов
+    refunds: Array<Refund>	                //Список возвратов
     customer_interaction: Customer	        //Данные для взаимодействия с пользователем
     metadata: object	                    //Дополнительная информация. Любые данные, которые вам необходимы для проведения операции. Возвращаются в ответах и вебхуках
     error: Error

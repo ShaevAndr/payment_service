@@ -1,4 +1,4 @@
-import { AmountDetails, PaymentMethod } from "./"
+import { AmountDetails, PaymentMethod } from "."
 
 export interface PaymentConfirmWebhook {
   type: string
