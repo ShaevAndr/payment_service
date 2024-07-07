@@ -3,6 +3,7 @@ import { AppModule } from './modules/app/app.module';
 import { Logger } from 'nestjs-pino';
 import { join } from 'path';
 import { ClientOptions, Transport } from '@nestjs/microservices';
+import { ValidationPipe } from '@nestjs/common';
 
 const { PORT } = process.env;
 
@@ -17,6 +18,10 @@ async function bootstrap() {
   });
 
   app.useLogger(app.get(Logger))
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: false,
+  }));
   await app.listen();
 }
 bootstrap();
