@@ -1,0 +1,8 @@
+export const CREATE_SESSION = '/api/v1/session/create'
+export const CREATE_SESSION_WITH_FISCALIZATION = 'session/init/payout/fiscalizatio'
+export const WIDGET_TOKEN = '/api/v1/token'
+export const BALANCE = '/api/v1/wallet/balance'
+export const CANCEL_PAYMENT = '/api/v1/session/cancel'
+export const CONFIRM_PAYMENT = '/api/v1/session/confirm'
+export const CHECK_SELF_EMPLOYED = '/api/v1/npd/check'
+export const STATUS_SELF_EMPLOYED = '/api/v1/npd/request/status'

@@ -9,5 +9,5 @@ export interface RequestWidgetToken {
 export interface ResponseWidgetToken {
     status: 'error' | 'ok'
     public_token?: string
-    error: Error
+    error?: Error
 }

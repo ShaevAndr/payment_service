@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package payment;
+
+service paymentService {
+    rpc GetBalance (BalanceRequest) returns (BalanceResponse);
+//   rpc BindSelfEmployed (BindRequest) returns (BindResponse); я так понял, что там просто ссылку надо вставить с сайта банка
+    rpc CheckSelfEmployed (taxReference) returns (CheckCheckSelfEmployedResponse);
+    rpc ConfirmPayout (TransactionId) returns (ConfirmOrCancelResponse);
+    rpc CancelPayout (TransactionId) returns (ConfirmOrCancelResponse);
+  //not emlpemented yet
+    rpc CreatePaymentSession (PaymentSessionRequest) returns (PaymentSessionResponse);
+    rpc GetTokenizedCardData (TokenRequest) returns (TokenResponse);
+    rpc orderInfo (RequestInfo) returns (ResponseInfo);
+}
+
+// баланс
+message WalletDetails {
+    uint64 amount = 1;
+    string currency = 2;
+}
+
+message Error {
+    string code = 1;
+    string message = 2;
+}
+
+message BalanceResponse {
+    StatusType status=1;
+    repeated WalletDetails wallets = 2;
+    Error error = 3;
+}
+
+enum StatusType {
+    ERROR = 0;
+    OK = 1;
+}
+
+message BalanceRequest {
+    string bank = 1; // банк, по умолчанию банк 131
+}
+
+// проверка самозанятого
+
+message taxReference {
+    uint64 taxReference = 1; // одного символа не хватило до uint32
+    string bank = 2; // банк, по умолчанию банк 131
+
+}
+
+
+message CheckCheckSelfEmployedResponse {
+    StatusType status = 1;
+    Error error = 2;
+    SelfEmployedDetails details = 3;
+}
+
+message SelfEmployedDetails {
+    bool isBind = 1;
+    bool isSelfEmployed = 2;
+}
+
+// подтверждение/отмена платежа
+
+message TransactionId {
+    string transactionId = 1;
+    string bank = 2; // банк, по умолчанию банк 131
+
+}
+
+message ConfirmOrCancelResponse {
+    StatusType status = 1;
+    Error error = 2;
+}
+
+//Создание сессии
+message PaymentSessionRequest {
+    uint64 amount = 1;
+    Payer payer = 2;
+    Recipient recipient = 3;
+    PaymentDetails details = 4;
+    string reciept = 5;
+    string bank = 6; // банк, по умолчанию банк 131
+
+}
+
+message PaymentDetails {
+    repeated string description = 1;
+    repeated uint32 contractsNumbers = 2; //для удобства поиска дублей
+}
+
+message Payer {
+    uint32 payerId = 1;
+    PayerType payerType = 2;
+    string payerName = 3;
+    uint64 payerTaxNumber = 4;
+}
+
+message Recipient {
+    string recipientId = 1;
+    int32 recipientBankBik = 2;
+    string recipientFullName = 3;
+    uint32 recipientBankAccount = 4;
+    uint64 recipientTaxNumber = 5;
+    string email = 6;
+    string phone = 7;
+}
+
+enum PayerType {
+  LEGAL = 1;
+  INDIDVIDUAL =2;
+  FOREIGN = 3;
+}
+
+message PaymentSessionResponse {
+    StatusType status = 1;
+    Error error = 2;
+    string transactionId = 3;
+}
+
+//Создание сессии и получение токена карты
+message TokenRequest {
+    uint32 amount = 1;
+    Payer payer = 2;
+    Recipient recipient = 3;
+    string bank = 4; // банк, по умолчанию банк 131
+
+}
+
+message TokenResponse {
+    StatusType status = 1;
+    Error error = 2;
+    string publicToken = 3;
+}
+
+message RequestInfo {
+    repeated string orderPaymentId = 1;
+}
+
+message ResponseInfo {
+    repeated OrderInfo ordersInfo = 1;
+}
+
+message OrderInfo {
+    string status = 1;
+    string paymentDate=2;
+    string paymenDestinztion = 3;
+    repeated string description =4 ;
+    string recipientFullName = 5;
+    string reciept = 6;
+    string recipientId = 7;
+}

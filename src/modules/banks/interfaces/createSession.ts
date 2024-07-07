@@ -1,8 +1,9 @@
-import { AmountDetails, Amounts, Customer, ParticipantDetails, Payment, PaymentDetails, RecurrentTokenInfo, Refund } from "."
+import { AmountDetails, Amounts, Customer, ParticipantDetails, Payment, PaymentDetails, PaymentMethod, RecurrentTokenInfo, Refund } from "."
 
 export interface CreateSessionRequest {
-    amount_details: AmountDetails
-    metadata: string
+    payment_method: PaymentMethod
+    amount_details?: AmountDetails
+    metadata?: string
 }
 
 export interface CreateSessionResponse {

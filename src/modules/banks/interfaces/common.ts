@@ -32,13 +32,23 @@ export interface AcquiringWidgetMetadata {
     success_on_hold?: boolean; // Успешное удержание.
 }
 
+export interface PaymentMethod {
+    type: string	//Тип способа получения выплаты.Возможные варианты: card, bank_account, wallet, tax, recurrent
+    card?: CardPaymentMethod	//Банковская карта получателя
+    bank_account?: BankAccountPaymentMethod	//Банковский счет получателя
+    wallet?: WalletPaymentMethod	//Электронный кошелек получателя
+    tax?: TaxPaymentMethod	//Выплата в налоговую
+    recurrent?: RecurrentToken	//Выплата с использованием рекуррентного токена
+    // tokenize_card?: TokenizeCard	//Выплата с использованием токенизированного номера карты
+}
+
 // Объект суммы.
 export interface AmountDetails {
     amount: number; // Сумма.
     currency: Currency; // Валюта.
 }
 
-export type Currency = 'rub' | 'eur'
+export type Currency = 'rub' | 'euro'
 
 // Объект c информацией о комиссии за транзакцию.
 export interface Amounts {
