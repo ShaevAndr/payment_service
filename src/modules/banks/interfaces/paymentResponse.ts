@@ -9,10 +9,11 @@ export interface PaymentResponseSuccess {
     fiscalization_details: FiscalizationDetails
     metadata: string
     participant_details: ParticipantDetails
+    error?: Error
 }
 
 export interface PaymentResponseError {
-    error: Error
     status: string
+    error?: Error
 }
 
