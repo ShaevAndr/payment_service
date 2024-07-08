@@ -77,16 +77,43 @@ message ConfirmOrCancelResponse {
 message PaymentSessionRequest {
     uint64 amount = 1;
     Payer payer = 2;
-    Recipient recipient = 3;
+    Payment_type paymentType = 3;
     PaymentDetails details = 4;
-    string reciept = 5;
+    Reciept reciept = 5;
     string bank = 6; // банк, по умолчанию банк 131
 
 }
 
+enum Payment_type {
+    CARD_TOKENS = 1;
+    BANK_ACCOUNT = 2;
+}
+
+message Reciept {
+    string id = 1;
+    string url = 2;
+}
+
 message PaymentDetails {
-    repeated string description = 1;
-    repeated uint32 contractsNumbers = 2; //для удобства поиска дублей
+    oneof paymenMethod {
+        CardTokens cardTokens = 1;
+        BankAccount bankAccount = 2;
+    }
+}
+
+message bankAccount {
+    string bik = 1;
+    string bankAccount = 2;
+    string fullName = 3;
+    string description = 4;
+}
+
+message CardTokens {
+    string numberHash = 1;
+    string expirationDateHash = 2;
+    string cardholderNameHash = 3;
+    string securityCodeHash = 4;
+    string widgetToken = 5;
 }
 
 message Payer {
@@ -94,16 +121,6 @@ message Payer {
     PayerType payerType = 2;
     string payerName = 3;
     uint64 payerTaxNumber = 4;
-}
-
-message Recipient {
-    string recipientId = 1;
-    int32 recipientBankBik = 2;
-    string recipientFullName = 3;
-    uint32 recipientBankAccount = 4;
-    uint64 recipientTaxNumber = 5;
-    string email = 6;
-    string phone = 7;
 }
 
 enum PayerType {
@@ -120,10 +137,7 @@ message PaymentSessionResponse {
 
 //Создание сессии и получение токена карты
 message TokenRequest {
-    uint32 amount = 1;
-    Payer payer = 2;
-    Recipient recipient = 3;
-    string bank = 4; // банк, по умолчанию банк 131
+    string bank = 1; // банк, по умолчанию банк 131
 
 }
 

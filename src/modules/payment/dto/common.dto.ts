@@ -13,7 +13,7 @@ export class CommonResponseDto {
     error?: Error
 }
 
-class Error {
+export class Error {
     code: string
     description: string
 }

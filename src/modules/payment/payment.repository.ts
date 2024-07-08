@@ -11,4 +11,10 @@ export class PaymentRepository {
     public async getSessionId(transactionId: string): Promise<string> {
         throw new Error("Method not implemented.");
     }
+
+    public async updateOrder(transactionId: string, updatedOrder: ): Promise<string> {
+        throw new Error("Method not implemented.");
+    }
+
+
 }

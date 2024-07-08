@@ -1,7 +1,4 @@
-import { CreateSessionResponse, PaymentCancelResponse, PaymentConfirmResponse } from "@/modules/banks/interfaces"
-import { ResponseWidgetToken } from "@/modules/banks/interfaces/widgetTocken"
-import { CheckSelfEmployedDtoResponse, CreateSessionRequestDto, PaymentActionsResponseDto } from "@/modules/payment/dto"
-import { BalanceResponseDto } from "@/modules/payment/dto/getBalance.dto"
+import { TokenizedCardResponseDto, BalanceResponseDto, CheckSelfEmployedDtoResponse, PaymentSessionRequestDto, PaymentActionsResponseDto, PaymentSessionResponseDto } from "@/modules/payment/dto"
 
 
 export abstract class Bank {
@@ -11,11 +8,10 @@ export abstract class Bank {
     confirmPayment: (sessionId: string) => Promise<PaymentActionsResponseDto>
     cancelPayment: (sessionId: string) => Promise<PaymentActionsResponseDto>
 
-    createSession: (request: CreateSessionRequestDto) => Promise<CreateSessionResponse>
+    createSession: (request: PaymentSessionRequestDto) => Promise<PaymentSessionResponseDto>
     linkSelfEmployed: () => any
-    getTokenizedCard: () => string
+    getTokenizeWidget: () => Promise<TokenizedCardResponseDto>
     getPaymentNotification: () => any
     getCheck: () => any
-    getWidgetToken: (sessionId: string) => Promise<ResponseWidgetToken>
 
 }

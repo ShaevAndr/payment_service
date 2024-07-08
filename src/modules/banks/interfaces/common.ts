@@ -39,7 +39,14 @@ export interface PaymentMethod {
     wallet?: WalletPaymentMethod	//Электронный кошелек получателя
     tax?: TaxPaymentMethod	//Выплата в налоговую
     recurrent?: RecurrentToken	//Выплата с использованием рекуррентного токена
-    // tokenize_card?: TokenizeCard	//Выплата с использованием токенизированного номера карты
+    tokenize_card?: TokenizeCard	//Выплата с использованием токенизированного номера карты
+}
+
+export interface TokenizeCard {
+    number_hash: string
+    expiration_date_hash: string
+    cardholder_name_hash: string
+    security_code_hash: string
 }
 
 // Объект суммы.
@@ -74,11 +81,11 @@ export type SystemType = 'ru' | 'faster_payment_system' | 'faster_payment_system
 export interface BankAccountRU {
     bik: string; // БИК банка.
     account: string; // Номер счета.
-    token: string; // Токен.
+    token?: string; // Токен.
     full_name: string; // Полное имя владельца счета.
     description: string; // Описание.
-    inn: string; // ИНН.
-    kpp: string; // КПП.
+    inn?: string; // ИНН.
+    kpp?: string; // КПП.
     is_fast?: boolean; // Быстрый ли счет.
 }
 
@@ -194,8 +201,8 @@ export interface EncryptedCard {
 
 // Объект с описанием ошибки.
 export interface Error {
-    code?: string; // Код ошибки
-    description?: string; // Описание ошибки
+    code: string; // Код ошибки
+    description: string; // Описание ошибки
 }
 
 // Объект с данными пользователя Системы быстрых платежей.
@@ -332,15 +339,6 @@ export interface PaymentDetails {
 }
 
 // Объект с описанием способа получения выплаты.
-export interface PaymentMethod {
-    type: string; // Тип метода платежа
-    card?: CardPaymentMethod; // Платежная карта
-    bank_account?: BankAccountPaymentMethod; // Банковский счет
-    wallet?: WalletPaymentMethod; // Кошелек
-    tax?: TaxPaymentMethod; // Налоговый платеж
-    recurrent?: RecurrentToken; // Регулярный токен
-    // tokenize_card?: TokenizeCard; // Токенизированная карта
-}
 
 // Параметры для проведения платежа.
 export interface PaymentOptions {

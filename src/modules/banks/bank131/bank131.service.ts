@@ -1,15 +1,16 @@
 import { Bank } from "@/core/interfaces/bank.interface";
-import { BalanceRequest, BalanceResponse, CheckSelfEmployedRequest, CheckSelfEmployedResponse, CreateSessionRequest, CreateSessionResponse, EmployedStatusRequest, EmployedStatusResponse, PaymentCancelRequest, PaymentCancelResponse, PaymentConfirmRequest, PaymentConfirmResponse } from "../interfaces";
+import { BalanceRequest, BalanceResponse, CheckSelfEmployedRequest, CheckSelfEmployedResponse, CreateSessionRequest, CreateSessionResponse, EmployedStatusRequest, EmployedStatusResponse, PaymentCancelRequest, PaymentCancelResponse, PaymentConfirmRequest, PaymentConfirmResponse, PaymentMethod, PaymentRequest } from "../interfaces";
 import { ConfigService } from "@nestjs/config";
-import { RequestWidgetToken, ResponseWidgetToken } from "../interfaces/widgetTocken";
-import { BALANCE, CHECK_SELF_EMPLOYED, CONFIRM_PAYMENT, CREATE_SESSION, STATUS_SELF_EMPLOYED, WIDGET_TOKEN } from "../lib";
+import { RequestWidgetToken, ResponseWidgetToken } from "../interfaces/widgetToken";
+import { BALANCE, CHECK_SELF_EMPLOYED, CONFIRM_PAYMENT, CREATE_SESSION, CREATE_SESSION_WITH_FISCALIZATION, PAYMENT_METHOD, STATUS_SELF_EMPLOYED, SYSTEM_TYPE, WIDGET_TOKEN } from "../lib";
 import ky from 'ky'
-import { BalanceResponseDto } from "@/modules/payment/dto/getBalance.dto";
 import { transformBalanceResponse, statusSelfEmployedTransformer, transformPaymentActionsResponse } from "./transformers";
-import { CheckSelfEmployedDtoResponse } from "@/modules/payment/dto";
+import { PaymentSessionRequestDto, PaymentSessionResponseDto, PaymentActionsResponseDto, BalanceResponseDto, CheckSelfEmployedDtoResponse, TokenizedCardResponseDto } from "@/modules/payment/dto";
 import { HttpException, HttpStatus, Logger } from "@nestjs/common";
-import { PaymentActionsResponseDto } from "@/modules/payment/dto/paymentActions.dto";
+import { } from "@/modules/payment/dto/paymentActions.dto";
 import { errorHandler } from "../lib/utils";
+import { createPaymentMethodBody } from "../lib/utils/createPaymentMethodBody";
+
 
 export class Bank131 implements Bank {
     ROOT_URL: string;
@@ -19,7 +20,6 @@ export class Bank131 implements Bank {
         private readonly configService: ConfigService,
         private readonly X_PARTNER_PROJECT: string,
         private readonly X_PARTNER_SIGN: string,
-        private readonly headers: Record<string, string>
     ) {
         this.X_PARTNER_PROJECT = this.configService.get('X_PARTNER_PROJECT')
         this.X_PARTNER_SIGN = 'УТОЧНИТЬ ГДЕ ВЗЯТЬ И КАК ПОЛЬЗОВАТЬСЯ'
@@ -70,7 +70,7 @@ export class Bank131 implements Bank {
                             if (body.status === 'pending') {
                                 this.logger.debug('Запрос идентификатора запроса на проверку самозанятостиб status="pending"')
                                 await this.delay(40000)
-                                return ky(request)
+                                return ky(request, options)
                             }
                             retries = 0
                             return response
@@ -122,12 +122,111 @@ export class Bank131 implements Bank {
             return errorHandler(err)
         }
     }
-    public createSession(): Promise<CreateSessionResponse> {
+    public createSession(request: PaymentSessionRequestDto): Promise<PaymentSessionResponseDto> {
         this.logger.log('создание сессии')
+        try {
+            const paymentBody: PaymentMethod = createPaymentMethodBody(request)
+            const requestBody: PaymentRequest = {
+                payment_method: paymentBody,
+                amount_details: {
+                    amount: request.amount,
+                    currency: 'rub'
+                },
+                fiscalization_details: {
+                    professional_income_taxpayer: {
+                        services: [
+                            {
+                                name: request.,
+                                amount_details: {
+                                    amount: request.amount,
+                                    currency: 'rub'
+                                }
+                            },
+                        ],
+                        tax_reference: `${request.payer.payerTaxNumber}`,
+                        payer_type: request.payer.payerType,
+                        payer_tax_number: `${request.payer.payerTaxNumber}`,
+                        payer_name: request.payer.payerName,
+                        receipt: {
+                            id: "Узнать получаем мы его или нет",
+                            link: request.reciept.url
+                        }
+                    }
+
+                },
+            }
+
+
+            const response = ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<>()
+            return response
+        } catch (err) {
+            this.logger.error('ошибка при создании сессии', err)
+            return errorHandler(err)
+        }
     }
 
+    public createSessionWithBankAccount(request: CreateSessionRequestDto) {
+        const body: PaymentRequest = {
+            payment_method: {
+                type: PAYMENT_METHOD.BANK_ACCOUNT,
+                bank_account: {
+                    system_type: 'ru',
+                    ru: {
+                        bik: `${request.recipient.recipientBankBik}`,
+                        account: `${request.recipient.recipientBankAccount}`,
+                        full_name: request.recipient.recipientFullName,
+                        description: request.details.description.join(',')
+                    }
+                }
+            },
+            amount_details: {
+                amount: request.amount,
+                currency: 'rub'
+            },
+            fiscalization_details: {
+                professional_income_taxpayer: {
+                    services: [
+                        {
+                            name: request.details.description.join(','),
+                            amount_details: {
+                                amount: request.amount,
+                                currency: 'rub'
+                            }
+                        },
+                    ],
+                    tax_reference: `${request.payer.payerTaxNumber}`,
+                    payer_type: request.payer.payerType,
+                    payer_tax_number: `${request.payer.payerTaxNumber}`,
+                    payer_name: request.payer.payerName,
+                    receipt: {
+                        id: "Узнать получаем мы его или нет",
+                        link: request.reciept
+                    }
+                }
 
+            },
+            metadata: 'services',
+        }
+    }
 
+    public async getTokenizeWidget(): Promise<TokenizedCardResponseDto> {
+        this.logger.log('Получение токена')
+
+        try {
+            const body: RequestWidgetToken = {
+                tokenize_widget: {
+                    access: true
+                }
+            }
+
+            const response = await ky.post(`${WIDGET_TOKEN}`, { json: body }).json<ResponseWidgetToken>()
+
+            return response
+        } catch (err) {
+            this.logger.error('ошибка при получении токена', err)
+            return errorHandler(err)
+        }
+    }
 
     private getHeader() {
         return {
