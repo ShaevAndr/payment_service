@@ -165,50 +165,6 @@ export class Bank131 implements Bank {
         }
     }
 
-    public createSessionWithBankAccount(request: CreateSessionRequestDto) {
-        const body: PaymentRequest = {
-            payment_method: {
-                type: PAYMENT_METHOD.BANK_ACCOUNT,
-                bank_account: {
-                    system_type: 'ru',
-                    ru: {
-                        bik: `${request.recipient.recipientBankBik}`,
-                        account: `${request.recipient.recipientBankAccount}`,
-                        full_name: request.recipient.recipientFullName,
-                        description: request.details.description.join(',')
-                    }
-                }
-            },
-            amount_details: {
-                amount: request.amount,
-                currency: 'rub'
-            },
-            fiscalization_details: {
-                professional_income_taxpayer: {
-                    services: [
-                        {
-                            name: request.details.description.join(','),
-                            amount_details: {
-                                amount: request.amount,
-                                currency: 'rub'
-                            }
-                        },
-                    ],
-                    tax_reference: `${request.payer.payerTaxNumber}`,
-                    payer_type: request.payer.payerType,
-                    payer_tax_number: `${request.payer.payerTaxNumber}`,
-                    payer_name: request.payer.payerName,
-                    receipt: {
-                        id: "Узнать получаем мы его или нет",
-                        link: request.reciept
-                    }
-                }
-
-            },
-            metadata: 'services',
-        }
-    }
-
     public async getTokenizeWidget(): Promise<TokenizedCardResponseDto> {
         this.logger.log('Получение токена')
 
