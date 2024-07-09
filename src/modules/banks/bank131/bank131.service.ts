@@ -8,8 +8,9 @@ import { transformBalanceResponse, statusSelfEmployedTransformer, transformPayme
 import { PaymentSessionRequestDto, PaymentSessionResponseDto, PaymentActionsResponseDto, BalanceResponseDto, CheckSelfEmployedDtoResponse, TokenizedCardResponseDto } from "@/modules/payment/dto";
 import { HttpException, HttpStatus, Logger } from "@nestjs/common";
 import { } from "@/modules/payment/dto/paymentActions.dto";
-import { errorHandler } from "../lib/utils";
-import { createPaymentMethodBody } from "../lib/utils/createPaymentMethodBody";
+import { errorHandler, generateBodyServices } from "../lib/utils";
+import { createPaymentMethodBody } from "../lib/utils";
+import crypto from 'crypto'
 
 
 export class Bank131 implements Bank {
@@ -19,22 +20,38 @@ export class Bank131 implements Bank {
     constructor(
         private readonly configService: ConfigService,
         private readonly X_PARTNER_PROJECT: string,
-        private readonly X_PARTNER_SIGN: string,
+        private readonly privateKey: string,
     ) {
         this.X_PARTNER_PROJECT = this.configService.get('X_PARTNER_PROJECT')
-        this.X_PARTNER_SIGN = 'УТОЧНИТЬ ГДЕ ВЗЯТЬ И КАК ПОЛЬЗОВАТЬСЯ'
+        this.privateKey = 'super secret key'
         this.ROOT_URL = this.configService.get('NODE_ENV') === 'production' ? 'https://bank131.ru/' : 'https://demo.bank131.ru/'
-        this.ky.create({
-            headers: this.getHeader(),
+        this.ky = ky.create({
             prefixUrl: this.ROOT_URL,
+            headers: this.getHeader(),
             retry: {
                 limit: 2,
                 methods: ['POST'],
                 statusCodes: [500, 502, 503, 504],
                 backoffLimit: 5000
             },
+            hooks: {
+                beforeRequest: [
+                    (request) => {
+                        const signature = this.encriptBody(request.json)
+                        request.headers.set("X-PARTNER-SIGN", signature)
+                    }
+                ]
+            }
         })
     }
+
+    private encriptBody(body: Record<string, any>): string {
+        const signer = crypto.createSign('sha256')
+        signer.update(JSON.stringify(body))
+        return signer.sign(this.privateKey, 'base64')
+    }
+
+
     public async getBalance(): Promise<BalanceResponseDto> {
         this.logger.log('получение баланса')
         try {
@@ -42,14 +59,13 @@ export class Bank131 implements Bank {
             const body: BalanceRequest = {
                 request_datetime: new Date().toISOString()
             }
-            const balance = await ky.post(`${BALANCE}`, { json: body }).json<BalanceResponse>()
+            const balance = await this.ky.post(`${BALANCE}`, { json: body }).json<BalanceResponse>()
             return transformBalanceResponse(balance)
         } catch (err) {
             this.logger.error('ошибка при получении баланса', err)
             return errorHandler(err)
         }
     };
-
 
     public async checkSelfEmployed(taxId): Promise<CheckSelfEmployedDtoResponse> {
         this.logger.log('получение статуса пользователя ИНН = ', taxId)
@@ -60,17 +76,18 @@ export class Bank131 implements Bank {
             const body: CheckSelfEmployedRequest = {
                 tax_reference: `${taxId}`
             }
-            const checkResponse = await ky.post(`${CHECK_SELF_EMPLOYED}`, {
+            const checkResponse = await this.ky.post(`${CHECK_SELF_EMPLOYED}`, {
                 json: body,
                 hooks: {
                     afterResponse: [
                         async (request, options, response) => {
                             const body = await response.json();
                             this.logger.debug('Запрос идентификатора запроса на проверку самозанятости')
-                            if (body.status === 'pending') {
+                            if (body.status === 'pending' && retries < maxRetries) {
                                 this.logger.debug('Запрос идентификатора запроса на проверку самозанятостиб status="pending"')
+                                retries++;
                                 await this.delay(40000)
-                                return ky(request, options)
+                                return this.ky(request, options)
                             }
                             retries = 0
                             return response
@@ -83,9 +100,24 @@ export class Bank131 implements Bank {
                 request_id: checkResponse.request_id
             }
 
-            const statusResponse = await ky.post(`${STATUS_SELF_EMPLOYED}`, {
+            const statusResponse = await this.ky.post(`${STATUS_SELF_EMPLOYED}`, {
                 json: requestStatusBody,
-
+                hooks: {
+                    afterResponse: [
+                        async (request, options, response) => {
+                            const body = await response.json();
+                            this.logger.debug('Запрос идентификатора запроса на проверку самозанятости')
+                            if (body.status === 'pending' && retries < maxRetries) {
+                                this.logger.debug('Запрос идентификатора запроса на проверку самозанятостиб status="pending"')
+                                retries++;
+                                await this.delay(40000)
+                                return ky(request, options)
+                            }
+                            retries = 0
+                            return response
+                        }
+                    ]
+                }
             }).json<EmployedStatusResponse>()
 
             return statusSelfEmployedTransformer(statusResponse)
@@ -101,7 +133,7 @@ export class Bank131 implements Bank {
             const body: PaymentConfirmRequest = {
                 session_id: sessionId,
             }
-            const response = await ky.post(`${CONFIRM_PAYMENT}`, { json: body }).json<PaymentConfirmResponse>()
+            const response = await this.ky.post(`${CONFIRM_PAYMENT}`, { json: body }).json<PaymentConfirmResponse>()
             return transformPaymentActionsResponse(response)
         } catch (err) {
             this.logger.error('ошибка при подтверждении выплаты', err)
@@ -115,13 +147,14 @@ export class Bank131 implements Bank {
             const body: PaymentCancelRequest = {
                 session_id: sessionId,
             }
-            const response = await ky.post(`${CONFIRM_PAYMENT}`, { json: body }).json<PaymentCancelResponse>()
+            const response = await this.ky.post(`${CONFIRM_PAYMENT}`, { json: body }).json<PaymentCancelResponse>()
             return transformPaymentActionsResponse(response)
         } catch (err) {
             this.logger.error('ошибка при отмене выплаты', err)
             return errorHandler(err)
         }
     }
+
     public createSession(request: PaymentSessionRequestDto): Promise<PaymentSessionResponseDto> {
         this.logger.log('создание сессии')
         try {
@@ -134,30 +167,23 @@ export class Bank131 implements Bank {
                 },
                 fiscalization_details: {
                     professional_income_taxpayer: {
-                        services: [
-                            {
-                                name: request.,
-                                amount_details: {
-                                    amount: request.amount,
-                                    currency: 'rub'
-                                }
-                            },
-                        ],
+                        services: generateBodyServices(request.services),
                         tax_reference: `${request.payer.payerTaxNumber}`,
                         payer_type: request.payer.payerType,
                         payer_tax_number: `${request.payer.payerTaxNumber}`,
                         payer_name: request.payer.payerName,
-                        receipt: {
-                            id: "Узнать получаем мы его или нет",
-                            link: request.reciept.url
-                        }
                     }
 
                 },
+                participant_details: {
+                    recipient: {
+                        full_name: request.recipientFullName
+                    }
+                }
             }
 
+            const response = ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<CreateSessionResponse>()
 
-            const response = ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<PaymentResponseSuccess>()
             return response
         } catch (err) {
             this.logger.error('ошибка при создании сессии', err)
@@ -175,7 +201,7 @@ export class Bank131 implements Bank {
                 }
             }
 
-            const response = await ky.post(`${WIDGET_TOKEN}`, { json: body }).json<ResponseWidgetToken>()
+            const response = await this.ky.post(`${WIDGET_TOKEN}`, { json: body }).json<ResponseWidgetToken>()
 
             return response
         } catch (err) {
@@ -187,7 +213,6 @@ export class Bank131 implements Bank {
     private getHeader() {
         return {
             'X-PARTNER-PROJECT': this.X_PARTNER_PROJECT,
-            "X-PARTNER-SIGN": this.X_PARTNER_SIGN,
             "Content-Type": "application/json"
         }
     }

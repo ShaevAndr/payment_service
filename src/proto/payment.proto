@@ -8,9 +8,9 @@ service paymentService {
     rpc CheckSelfEmployed (taxReference) returns (CheckCheckSelfEmployedResponse);
     rpc ConfirmPayout (TransactionId) returns (ConfirmOrCancelResponse);
     rpc CancelPayout (TransactionId) returns (ConfirmOrCancelResponse);
-  //not emlpemented yet
     rpc CreatePaymentSession (PaymentSessionRequest) returns (PaymentSessionResponse);
     rpc GetTokenizedCardData (TokenRequest) returns (TokenResponse);
+  //not emlpemented yet
     rpc orderInfo (RequestInfo) returns (ResponseInfo);
 }
 
@@ -79,19 +79,15 @@ message PaymentSessionRequest {
     Payer payer = 2;
     Payment_type paymentType = 3;
     PaymentDetails details = 4;
-    Reciept reciept = 5;
-    string bank = 6; // банк, по умолчанию банк 131
+    string recipientFullName = 5;
+    repeated Service services = 6;
+    string bank = 7; // банк, по умолчанию банк 131
 
 }
 
 enum Payment_type {
     CARD_TOKENS = 1;
     BANK_ACCOUNT = 2;
-}
-
-message Reciept {
-    string id = 1;
-    string url = 2;
 }
 
 message PaymentDetails {
@@ -106,6 +102,11 @@ message bankAccount {
     string bankAccount = 2;
     string fullName = 3;
     string description = 4;
+}
+
+message Service {
+    string name = 1;
+    string amount = 2;
 }
 
 message CardTokens {
@@ -152,13 +153,13 @@ message RequestInfo {
 }
 
 message ResponseInfo {
-    repeated OrderInfo ordersInfo = 1;
+    repeated OrderInfo ordersId = 1;
 }
 
 message OrderInfo {
     string status = 1;
     string paymentDate=2;
-    string paymenDestinztion = 3;
+    string paymenDestination = 3;
     repeated string description =4 ;
     string recipientFullName = 5;
     string reciept = 6;

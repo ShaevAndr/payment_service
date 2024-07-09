@@ -9,6 +9,7 @@ export interface CreateSessionRequest {
 export interface CreateSessionResponse {
     status: 'error' | 'ok'
     session?: PaymentSession
+    payment?: PaymentMethod
     error?: Error
 }
 

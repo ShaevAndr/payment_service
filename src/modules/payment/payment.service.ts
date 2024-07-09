@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { BanksFactory } from "../banks/banks.factory";
 import { BalanceResponseDto, GetBalanceDto } from "./dto/getBalance.dto";
 import { CheckSelfEmployedDtoRequest, CheckSelfEmployedDtoResponse, PaymentActionsRequestDto, PaymentActionsResponseDto } from "./dto";
-import { PaymentRepository } from "./payment.repository";
+import { PaymentRepository } from "./repositories/orders.repository";
 
 @Injectable()
 export class PaymentService {
