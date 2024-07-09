@@ -1,5 +1,5 @@
 import { Bank } from "@/core/interfaces/bank.interface";
-import { BalanceRequest, BalanceResponse, CheckSelfEmployedRequest, CheckSelfEmployedResponse, CreateSessionRequest, CreateSessionResponse, EmployedStatusRequest, EmployedStatusResponse, PaymentCancelRequest, PaymentCancelResponse, PaymentConfirmRequest, PaymentConfirmResponse, PaymentMethod, PaymentRequest } from "../interfaces";
+import { BalanceRequest, BalanceResponse, CheckSelfEmployedRequest, CheckSelfEmployedResponse, CreateSessionRequest, CreateSessionResponse, EmployedStatusRequest, EmployedStatusResponse, PaymentCancelRequest, PaymentCancelResponse, PaymentConfirmRequest, PaymentConfirmResponse, PaymentMethod, PaymentRequest, PaymentResponseSuccess } from "../interfaces";
 import { ConfigService } from "@nestjs/config";
 import { RequestWidgetToken, ResponseWidgetToken } from "../interfaces/widgetToken";
 import { BALANCE, CHECK_SELF_EMPLOYED, CONFIRM_PAYMENT, CREATE_SESSION, CREATE_SESSION_WITH_FISCALIZATION, PAYMENT_METHOD, STATUS_SELF_EMPLOYED, SYSTEM_TYPE, WIDGET_TOKEN } from "../lib";
@@ -157,7 +157,7 @@ export class Bank131 implements Bank {
             }
 
 
-            const response = ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<>()
+            const response = ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<PaymentResponseSuccess>()
             return response
         } catch (err) {
             this.logger.error('ошибка при создании сессии', err)
