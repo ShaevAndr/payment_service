@@ -111,7 +111,7 @@ export class Bank131 implements Bank {
                                 this.logger.debug('Запрос идентификатора запроса на проверку самозанятостиб status="pending"')
                                 retries++;
                                 await this.delay(40000)
-                                return ky(request, options)
+                                return this.ky(request, options)
                             }
                             retries = 0
                             return response
