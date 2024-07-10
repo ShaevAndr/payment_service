@@ -1,5 +1,5 @@
 import { BalanceResponseDto } from "@/modules/payment/dto/getBalance.dto";
-import { BalanceResponse } from "../../interfaces/balance";
+import { BalanceResponse } from "../interfaces/balance";
 
 export const transformBalanceResponse = (response: BalanceResponse): BalanceResponseDto => {
     if (response.error) {

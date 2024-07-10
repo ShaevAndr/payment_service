@@ -1,5 +1,5 @@
 import { PaymentSessionRequestDto } from "@/modules/payment/dto";
-import { PaymentMethod } from "../../interfaces";
+import { PaymentMethod } from "../../bank131/interfaces";
 
 export const createPaymentMethodBody = (request: PaymentSessionRequestDto): PaymentMethod => {
 

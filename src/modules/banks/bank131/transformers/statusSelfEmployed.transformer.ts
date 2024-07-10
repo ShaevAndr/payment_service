@@ -1,5 +1,5 @@
 import { CheckSelfEmployedDtoResponse } from "@/modules/payment/dto";
-import { EmployedStatusResponse } from "../../interfaces";
+import { EmployedStatusResponse } from "../interfaces";
 
 export const statusSelfEmployedTransformer = (data: EmployedStatusResponse): CheckSelfEmployedDtoResponse => {
     switch (data.status) {

@@ -1,8 +1,7 @@
 import { Bank } from "@/core/interfaces/bank.interface";
-import { BalanceRequest, BalanceResponse, CheckSelfEmployedRequest, CheckSelfEmployedResponse, CreateSessionRequest, CreateSessionResponse, EmployedStatusRequest, EmployedStatusResponse, PaymentCancelRequest, PaymentCancelResponse, PaymentConfirmRequest, PaymentConfirmResponse, PaymentMethod, PaymentRequest, PaymentResponseSuccess } from "../interfaces";
+import { RequestWidgetToken, ResponseWidgetToken, BalanceRequest, BalanceResponse, CheckSelfEmployedRequest, CheckSelfEmployedResponse, CreateSessionRequest, CreateSessionResponse, EmployedStatusRequest, EmployedStatusResponse, PaymentCancelRequest, PaymentCancelResponse, PaymentConfirmRequest, PaymentConfirmResponse, PaymentMethod, PaymentRequest, PaymentResponseSuccess } from "./interfaces";
 import { ConfigService } from "@nestjs/config";
-import { RequestWidgetToken, ResponseWidgetToken } from "../interfaces/widgetToken";
-import { BALANCE, CHECK_SELF_EMPLOYED, CONFIRM_PAYMENT, CREATE_SESSION, CREATE_SESSION_WITH_FISCALIZATION, PAYMENT_METHOD, STATUS_SELF_EMPLOYED, SYSTEM_TYPE, WIDGET_TOKEN } from "../lib";
+import { BALANCE, CHECK_SELF_EMPLOYED, CONFIRM_PAYMENT, CREATE_SESSION_WITH_FISCALIZATION, PAYMENT_METHOD, STATUS_SELF_EMPLOYED, SYSTEM_TYPE, WIDGET_TOKEN } from "../lib";
 import ky from 'ky'
 import { transformBalanceResponse, statusSelfEmployedTransformer, transformPaymentActionsResponse } from "./transformers";
 import { PaymentSessionRequestDto, PaymentSessionResponseDto, PaymentActionsResponseDto, BalanceResponseDto, CheckSelfEmployedDtoResponse, TokenizedCardResponseDto } from "@/modules/payment/dto";
@@ -11,6 +10,7 @@ import { } from "@/modules/payment/dto/paymentActions.dto";
 import { errorHandler, generateBodyServices } from "../lib/utils";
 import { createPaymentMethodBody } from "../lib/utils";
 import crypto from 'crypto'
+import { newSessionTransformer } from "./transformers/newSessionResponse.transformer";
 
 
 export class Bank131 implements Bank {
@@ -155,7 +155,7 @@ export class Bank131 implements Bank {
         }
     }
 
-    public createSession(request: PaymentSessionRequestDto): Promise<PaymentSessionResponseDto> {
+    public async createSession(request: PaymentSessionRequestDto): Promise<PaymentSessionResponseDto> {
         this.logger.log('создание сессии')
         try {
             const paymentBody: PaymentMethod = createPaymentMethodBody(request)
@@ -182,9 +182,8 @@ export class Bank131 implements Bank {
                 }
             }
 
-            const response = ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<CreateSessionResponse>()
-
-            return response
+            const response = await this.ky.post(`${CREATE_SESSION_WITH_FISCALIZATION}`, { json: requestBody }).json<CreateSessionResponse>()
+            return newSessionTransformer(response)
         } catch (err) {
             this.logger.error('ошибка при создании сессии', err)
             return errorHandler(err)

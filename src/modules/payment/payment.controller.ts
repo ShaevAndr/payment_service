@@ -1,25 +1,18 @@
-import { Controller, UseGuards } from "@nestjs/common";
-import { PaymentGuard } from "./guards/payment.guard";
-import { GetBalanceDto } from "./dto/getBalance.dto";
-import { PaymentService } from "./payment.service";
-import { GrpcMethod } from "@nestjs/microservices";
-import { CheckSelfEmployedDtoRequest } from "./dto";
+import { Controller } from "@nestjs/common";
+
+import { PaymentConfirmWebhook } from "../banks/bank131/interfaces";
 
 @Controller()
-@UseGuards(PaymentGuard)
 export class PaymentController {
     constructor(
-        private readonly paymentService: PaymentService
+        private readonly webhookService: WebhookService
     ) { }
 
-    @GrpcMethod('paymentService', 'getBallance')
-    public async getBallance(payload: GetBalanceDto) {
-        return await this.paymentService.getBallance(payload)
+    public async confirmWebhookBank131(webhook: PaymentConfirmWebhook): Promise<TokenizedCardResponseDto> {
+        return await this.webhookService.updateSession(webhook)
     }
 
-    @GrpcMethod('paymentService', 'CheckSelfEmployed')
-
-    public async checkSelfEmployed(taxReference: CheckSelfEmployedDtoRequest) {
-        return await this.paymentService.checkSelfEmployed(taxReference)
+    public async compliteWebhook(webhook: PaymentConfirmWebhook): Promise<TokenizedCardResponseDto> {
+        return await this.webhookService.updateSession(webhook)
     }
 }

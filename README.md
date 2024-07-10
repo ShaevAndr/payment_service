@@ -71,3 +71,4 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+// "generate:proto": "protoc --plugin=protoc-gen-ts_protoc=node_modules/.bin/ts-proto --ts_proto_out=./src/proto --ts_proto_opt=outputServices=grpc-js --proto_path=./src/proto ./src/proto/\*.proto ",

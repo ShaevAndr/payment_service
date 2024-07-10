@@ -1,4 +1,4 @@
-import { AcquiringPayment, Payment, PaymentMethod } from "@/modules/banks/interfaces";
+import { AcquiringPayment, Payment, PaymentMethod } from "@/modules/banks/bank131/interfaces";
 import { CommonResponseDto } from "../common.dto";
 import { Error } from "../common.dto";
 

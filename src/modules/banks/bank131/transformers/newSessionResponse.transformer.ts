@@ -1,5 +1,5 @@
 import { PaymentSessionResponseDto } from "@/modules/payment/dto";
-import { CreateSessionResponse, PaymentResponseSuccess } from "../../interfaces";
+import { CreateSessionResponse, PaymentResponseSuccess } from "../interfaces";
 
 export const newSessionTransformer = (response: CreateSessionResponse): PaymentSessionResponseDto => {
     if (response.status === 'error') {

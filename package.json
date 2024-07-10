@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "generate:proto": "protoc -I ./src/proto --plugin=protoc-gen-ts_proto=.\\node_modules\\.bin\\protoc-gen-ts_proto.cmd --ts_proto_out=./src/proto --ts_proto_opt=nestJs=true --proto_path=./src/proto ./src/proto/*.proto",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -20,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.10.10",
+    "@grpc/grpc-js": "^1.10.11",
     "@grpc/proto-loader": "^0.7.13",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
@@ -42,6 +43,7 @@
     "mongoose": "^8.4.4",
     "nest-knexjs": "^0.0.23",
     "nestjs-pino": "^4.1.0",
+    "nestjs-proto-gen-ts": "^1.0.21",
     "pg": "^8.12.0",
     "pino": "^9.2.0",
     "pino-http": "^10.1.0",
@@ -49,7 +51,8 @@
     "pino-pretty": "^11.2.1",
     "postgres": "^3.4.4",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "ts-protoc-gen": "^0.15.1-pre.a71b34e"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -71,6 +74,7 @@
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
+    "ts-proto": "^1.181.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },
