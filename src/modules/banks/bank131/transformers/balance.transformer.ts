@@ -8,7 +8,8 @@ export const transformBalanceResponse = (response: BalanceResponse): BalanceResp
             error: {
                 code: response.error.code,
                 description: response.error.description
-            }
+            },
+            wallets: []
         }
     }
     const wallets = response.wallets.map(wallet => ({

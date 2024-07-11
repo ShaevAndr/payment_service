@@ -5,5 +5,6 @@ import { BanksFactory } from './banks.factory';
 @Module({
     imports: [],
     providers: [Bank131, BanksFactory],
+    exports: [Bank131, BanksFactory],
 })
 export class Bank131Module { }

@@ -63,7 +63,10 @@ export class Bank131 implements Bank {
             return transformBalanceResponse(balance)
         } catch (err) {
             this.logger.error('ошибка при получении баланса', err)
-            return errorHandler(err)
+            const obj = errorHandler(err) as BalanceResponseDto
+            obj.wallets = []
+            return obj
+
         }
     };
 

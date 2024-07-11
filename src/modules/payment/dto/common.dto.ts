@@ -4,7 +4,7 @@ import { IsString } from "class-validator";
 export class CommonDto {
 
     @IsString()
-    bankName: Banks
+    bank: Banks
 
 }
 

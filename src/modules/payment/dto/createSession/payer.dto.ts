@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsInt } from 'class-validator';
+import { IsString, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
 
 export enum PayerType {
     LEGAL = 'legal',
@@ -7,15 +7,20 @@ export enum PayerType {
 }
 
 export class PayerDto {
+    @IsNotEmpty()
     @IsInt()
     payerId: number;
+
+    @IsNotEmpty()
 
     @IsEnum(PayerType)
     payerType: PayerType;
 
     @IsString()
+    @IsNotEmpty()
     payerName: string;
 
+    @IsNotEmpty()
     @IsInt()
     payerTaxNumber: number;
 }

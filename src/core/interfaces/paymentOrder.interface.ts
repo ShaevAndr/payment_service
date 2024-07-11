@@ -1,5 +1,6 @@
 export interface IPaymentOrder {
-    id: string;
+    id?: string;
+    type: string;
     status: number;
     total_amount: number;
     description: string | null;
@@ -9,8 +10,8 @@ export interface IPaymentOrder {
     payer_tax_number: string;
     recipient_tax_number: string;
     recipient_bank_bik: string;
-    created_at: Date;
-    updated_at: Date;
-    session_id: number;
-    fiscalization_receipt_url: string | null;
+    created_at?: Date;
+    updated_at?: Date;
+    session_id: string;
+    fiscalization_receipt_url?: string | null;
 }

@@ -10,35 +10,8 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "payment";
 
-export enum StatusType {
-  ERROR = 0,
-  OK = 1,
-  UNRECOGNIZED = -1,
-}
-
-export enum PaymentType {
-  CARD_TOKENS = 0,
-  BANK_ACCOUNT = 1,
-  UNRECOGNIZED = -1,
-}
-
-export enum PayerType {
-  LEGAL = 0,
-  INDIDVIDUAL = 1,
-  FOREIGN = 2,
-  UNRECOGNIZED = -1,
-}
-
-export interface RequestOrders {
-  id: string[];
-}
-
 export interface RequestSessions {
   id: string[];
-}
-
-export interface ResponseOrders {
-  ordersInfo: OrderInfo[];
 }
 
 export interface OrderInfo {
@@ -54,13 +27,14 @@ export interface OrderInfo {
 }
 
 export interface ResponseSessions {
-  sessionInfo: SessionInfo[];
+  sessions: SessionInfo[];
 }
 
 export interface SessionInfo {
   id: string;
   sessionId: string;
   status: string;
+  orders: OrderInfo[];
 }
 
 /** баланс */
@@ -71,13 +45,13 @@ export interface WalletDetails {
 
 export interface Error {
   code: string;
-  message: string;
+  description: string;
 }
 
 export interface BalanceResponse {
-  status: StatusType;
+  status: string;
   wallets: WalletDetails[];
-  error: Error | undefined;
+  error?: Error | undefined;
 }
 
 export interface BalanceRequest {
@@ -93,9 +67,9 @@ export interface TaxReference {
 }
 
 export interface CheckCheckSelfEmployedResponse {
-  status: StatusType;
-  error: Error | undefined;
-  details: SelfEmployedDetails | undefined;
+  status: string;
+  error?: Error | undefined;
+  details?: SelfEmployedDetails | undefined;
 }
 
 export interface SelfEmployedDetails {
@@ -110,15 +84,15 @@ export interface Transaction {
 }
 
 export interface ConfirmOrCancelResponse {
-  status: StatusType;
-  error: Error | undefined;
+  status: string;
+  error?: Error | undefined;
 }
 
 /** Создание сессии */
 export interface PaymentSessionRequest {
   amount: number;
   payer: Payer | undefined;
-  paymentType: PaymentType;
+  paymentType: string;
   details: PaymentDetails | undefined;
   recipientFullName: string;
   services: Service[];
@@ -140,7 +114,7 @@ export interface BankAccount {
 
 export interface Service {
   name: string;
-  amount: string;
+  amount: number;
 }
 
 export interface CardTokens {
@@ -153,15 +127,15 @@ export interface CardTokens {
 
 export interface Payer {
   payerId: number;
-  payerType: PayerType;
+  payerType: string;
   payerName: string;
   payerTaxNumber: number;
 }
 
 export interface PaymentSessionResponse {
-  status: StatusType;
-  error: Error | undefined;
-  sessionId: string;
+  status: string;
+  error?: Error | undefined;
+  sessionId?: string | undefined;
 }
 
 /** Создание сессии и получение токена карты */
@@ -171,9 +145,9 @@ export interface TokenRequest {
 }
 
 export interface TokenResponse {
-  status: StatusType;
-  error: Error | undefined;
-  publicToken: string;
+  status: string;
+  error?: Error | undefined;
+  publicToken?: string | undefined;
 }
 
 export interface RequestInfo {
@@ -181,6 +155,8 @@ export interface RequestInfo {
 }
 
 export interface ResponseInfo {
+  status: string;
+  error?: Error | undefined;
   ordersId: OrderInfo[];
 }
 
@@ -198,8 +174,6 @@ export interface paymentClient {
   createPaymentSession(request: PaymentSessionRequest): Observable<PaymentSessionResponse>;
 
   getTokenizedCardData(request: TokenRequest): Observable<TokenResponse>;
-
-  getOrders(request: RequestOrders): Observable<ResponseOrders>;
 
   getSessions(request: RequestSessions): Observable<ResponseSessions>;
 }
@@ -228,8 +202,6 @@ export interface paymentController {
 
   getTokenizedCardData(request: TokenRequest): Promise<TokenResponse> | Observable<TokenResponse> | TokenResponse;
 
-  getOrders(request: RequestOrders): Promise<ResponseOrders> | Observable<ResponseOrders> | ResponseOrders;
-
   getSessions(request: RequestSessions): Promise<ResponseSessions> | Observable<ResponseSessions> | ResponseSessions;
 }
 
@@ -242,7 +214,6 @@ export function paymentControllerMethods() {
       "cancelPayout",
       "createPaymentSession",
       "getTokenizedCardData",
-      "getOrders",
       "getSessions",
     ];
     for (const method of grpcMethods) {

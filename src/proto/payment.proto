@@ -9,22 +9,15 @@ service payment {
     rpc CancelPayout (Transaction) returns (ConfirmOrCancelResponse);
     rpc CreatePaymentSession (PaymentSessionRequest) returns (PaymentSessionResponse);
     rpc GetTokenizedCardData (TokenRequest) returns (TokenResponse);
-    rpc getOrders (RequestOrders) returns (ResponseOrders);
     rpc getSessions (RequestSessions) returns (ResponseSessions);
 
-}
-
-message RequestOrders {
-    repeated string id= 1;
 }
 
 message RequestSessions {
     repeated string id = 1;
 }
 
-message ResponseOrders {
-    repeated OrderInfo ordersInfo= 1;
-}
+
 
 message OrderInfo {
     string id = 1;
@@ -40,13 +33,14 @@ message OrderInfo {
 }
 
 message ResponseSessions {
-    repeated SessionInfo sessionInfo= 1;
+    repeated SessionInfo sessions= 1;
 }
 
 message SessionInfo {
     string id = 1;
     string session_id =2;
     string status = 3;
+    repeated OrderInfo orders = 4;
 }
 
 
@@ -58,18 +52,13 @@ message WalletDetails {
 
 message Error {
     string code = 1;
-    string message = 2;
+    string description = 2;
 }
 
 message BalanceResponse {
-    StatusType status=1;
+    string status=1;
     repeated WalletDetails wallets = 2;
-    Error error = 3;
-}
-
-enum StatusType {
-    ERROR = 0;
-    OK = 1;
+    optional Error error = 3;
 }
 
 message BalanceRequest {
@@ -86,9 +75,9 @@ message TaxReference {
 
 
 message CheckCheckSelfEmployedResponse {
-    StatusType status = 1;
-    Error error = 2;
-    SelfEmployedDetails details = 3;
+    string status = 1;
+    optional  Error error = 2;
+    optional  SelfEmployedDetails details = 3;
 }
 
 message SelfEmployedDetails {
@@ -105,25 +94,20 @@ message Transaction {
 }
 
 message ConfirmOrCancelResponse {
-    StatusType status = 1;
-    Error error = 2;
+    string status = 1;
+    optional  Error error = 2;
 }
 
 //Создание сессии
 message PaymentSessionRequest {
     uint64 amount = 1;
     Payer payer = 2;
-    Payment_type paymentType = 3;
+    string paymentType = 3;
     PaymentDetails details = 4;
     string recipientFullName = 5;
     repeated Service services = 6;
     string bank = 7; // банк, по умолчанию банк 131
 
-}
-
-enum Payment_type {
-    CARD_TOKENS = 0;
-    BANK_ACCOUNT = 1;
 }
 
 message PaymentDetails {
@@ -142,7 +126,7 @@ message BankAccount {
 
 message Service {
     string name = 1;
-    string amount = 2;
+    uint64 amount = 2;
 }
 
 message CardTokens {
@@ -155,21 +139,15 @@ message CardTokens {
 
 message Payer {
     uint32 payerId = 1;
-    PayerType payerType = 2;
+    string payerType = 2;
     string payerName = 3;
     uint64 payerTaxNumber = 4;
 }
 
-enum PayerType {
-  LEGAL = 0;
-  INDIDVIDUAL =1;
-  FOREIGN = 2;
-}
-
 message PaymentSessionResponse {
-    StatusType status = 1;
-    Error error = 2;
-    string sessionId = 3;
+    string status = 1;
+    optional  Error error = 2;
+    optional  string sessionId = 3;
 }
 
 //Создание сессии и получение токена карты
@@ -179,9 +157,9 @@ message TokenRequest {
 }
 
 message TokenResponse {
-    StatusType status = 1;
-    Error error = 2;
-    string publicToken = 3;
+    string status = 1;
+    optional  Error error = 2;
+    optional  string publicToken = 3;
 }
 
 message RequestInfo {
@@ -189,5 +167,7 @@ message RequestInfo {
 }
 
 message ResponseInfo {
-    repeated OrderInfo ordersId = 1;
+    string status = 1;
+    optional Error error = 2;
+    repeated OrderInfo ordersId = 3;
 }

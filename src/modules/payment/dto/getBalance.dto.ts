@@ -1,9 +1,18 @@
+import { BalanceRequest, BalanceResponse, Error } from "@/proto/payment";
 import { CommonDto, CommonResponseDto } from "./common.dto";
+import { IsIn, IsOptional, IsString } from "class-validator";
 
-export class GetBalanceDto extends CommonDto { }
+export class GetBalanceDto implements BalanceRequest {
+    @IsOptional()
+    @IsString()
+    @IsIn(['bank131'])
+    bank: string;
+}
 
-export class BalanceResponseDto extends CommonResponseDto {
-    wallets?: Wallet[]
+export class BalanceResponseDto implements BalanceResponse {
+    status: string;
+    error?: Error;
+    wallets: Wallet[]
 }
 
 class Wallet {

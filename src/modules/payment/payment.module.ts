@@ -2,13 +2,15 @@ import { Module } from '@nestjs/common';
 import { PaymentGuard } from './guards/payment.guard';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { PaymentRepository } from './repositories/orders.repository';
 import { PaymentController } from './payment.controller';
+import { OrdersRepository } from './repositories/orders.repository';
 import { BanksFactory } from '../banks/banks.factory';
-import { PaymentService } from './payment.service';
+import { PaymentService } from './services/payment.service';
+
 
 @Module({
     imports: [
+        BanksFactory,
         ClientsModule.register([
             {
                 name: 'PAYMENT_PACKAGE',
@@ -19,7 +21,7 @@ import { PaymentService } from './payment.service';
                 },
             },
         ]),],
-    providers: [PaymentGuard, PaymentRepository, BanksFactory, PaymentService],
-    controllers: [PaymentController],
+    providers: [PaymentGuard, OrdersRepository],
+    controllers: [PaymentController, PaymentService],
 })
 export class PaymentModule { }

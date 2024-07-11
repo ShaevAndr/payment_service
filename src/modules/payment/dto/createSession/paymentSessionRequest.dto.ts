@@ -1,22 +1,26 @@
-import { IsString, IsInt, ValidateNested, IsEnum, IsArray, ArrayNotEmpty, IsNotEmpty } from 'class-validator';
+import { IsString, IsInt, ValidateNested, IsEnum, IsArray, ArrayNotEmpty, IsNotEmpty, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PayerDto } from './payer.dto';
 import { PaymentDetailsDto } from './paymentDetails.dto';
 import { Service } from './service.dto';
+import { PaymentSessionRequest } from '@/proto/payment';
 
 export enum PaymentType {
     CARD_TOKENS = 'card_tokens',
     BANK_ACCOUNT = 'bank_account',
 }
 
-export class PaymentSessionRequestDto {
+export class PaymentSessionRequestDto implements PaymentSessionRequest {
+    @IsNotEmpty()
     @IsInt()
     amount: number;
 
+    @IsNotEmpty()
     @ValidateNested({ each: true })
     @Type(() => PayerDto)
     payer: PayerDto;
 
+    @IsNotEmpty()
     @IsEnum(PaymentType)
     paymentType: PaymentType;
 
@@ -34,6 +38,7 @@ export class PaymentSessionRequestDto {
     @Type(() => Service)
     services: Service[];
 
+    @IsOptional()
     @IsString()
     bank: string;
 }
