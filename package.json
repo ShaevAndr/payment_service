@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "generate:proto": "protoc -I ./src/proto --plugin=protoc-gen-ts_proto=.\\node_modules\\.bin\\protoc-gen-ts_proto.cmd --ts_proto_out=./src/proto --ts_proto_opt=nestJs=true --proto_path=./src/proto ./src/proto/*.proto",
     "build": "nest build",
