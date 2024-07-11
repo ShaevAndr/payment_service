@@ -11,7 +11,7 @@ export class BanksFactory {
 
     public getBank(bankName?: Banks): Bank {
         switch (bankName) {
-            case Banks.Bank131:
+            case 'bank131':
                 return this.bank131
             default:
                 return this.bank131

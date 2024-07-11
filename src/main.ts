@@ -10,10 +10,8 @@ const { PORT } = process.env;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Запуск HTTP сервера
   await app.listen(3000);
 
-  // Запуск gRPC сервера
   const grpcApp = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.GRPC,
     options: {

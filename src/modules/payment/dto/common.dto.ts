@@ -17,3 +17,9 @@ export class Error {
     code: string
     description: string
 }
+
+export enum StatusType {
+    ERROR = 0,
+    OK = 1,
+    UNRECOGNIZED = -1,
+}

@@ -3,15 +3,12 @@ import { TokenizedCardResponseDto, BalanceResponseDto, CheckSelfEmployedDtoRespo
 
 export abstract class Bank {
     ROOT_URL: string
-    getBalance: () => Promise<BalanceResponseDto>
-    checkSelfEmployed: (taxId: number) => Promise<CheckSelfEmployedDtoResponse>
-    confirmPayment: (sessionId: string) => Promise<PaymentActionsResponseDto>
-    cancelPayment: (sessionId: string) => Promise<PaymentActionsResponseDto>
+    getBalance:() => Promise<BalanceResponseDto> 
+    checkSelfEmployed:(taxId: number)=> Promise<CheckSelfEmployedDtoResponse> 
+    confirmPayout:(sessionId: string)=> Promise<PaymentActionsResponseDto> 
+    cancelPayout:(sessionId: string)=> Promise<PaymentActionsResponseDto> 
+    createSession:(request: PaymentSessionRequestDto)=> Promise<PaymentSessionResponseDto> 
+    getTokenizeWidget:()=> Promise<TokenizedCardResponseDto> 
 
-    createSession: (request: PaymentSessionRequestDto) => Promise<PaymentSessionResponseDto>
-    linkSelfEmployed: () => any
-    getTokenizeWidget: () => Promise<TokenizedCardResponseDto>
-    getPaymentNotification: () => any
-    getCheck: () => any
 
 }

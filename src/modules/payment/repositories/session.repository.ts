@@ -9,13 +9,12 @@ export class SessionRepository {
         @InjectConnection() private readonly knex: Knex
     ) { }
 
-    async getSessionById(id: string): Promise<string> {
+    async getSessionById(id: string[]): Promise<string> {
 
         const session = await this.knex
             .select('*')
             .from('sessions')
-            .where('id', id)
-            .first()
+            .whereIn('id', id)
 
         return session
     }
